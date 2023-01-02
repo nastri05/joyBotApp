@@ -29,7 +29,7 @@ class ScreenBlock extends StatefulWidget {
 }
 
 class _ScreenBlockState extends State<ScreenBlock> {
-  List<VitriBlock> ListBlock = [
+  List<VitriBlock> listBlock = [
     VitriBlock(top: 120, left: 20, border: false, mode: 'START'),
   ];
   // bool isConnect() {
@@ -94,7 +94,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
 
   @override
   void dispose() {
-    ListBlock.clear();
+    listBlock.clear();
     super.dispose();
   }
 
@@ -124,7 +124,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
                   return Container(
                     child: GestureDetector(
                       onTap: () {
-                        ListBlock.add(
+                        listBlock.add(
                           VitriBlock(
                               top: 270,
                               left: 300,
@@ -154,7 +154,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
               width: MediaQuery.of(context).size.width + 400,
               child: Stack(
                 children: <Widget>[
-                  ...ListBlock.map(
+                  ...listBlock.map(
                     (e) => block(
                       myController_angle: e.myController_angle,
                       myController_speed: e.myController_speed,
@@ -183,32 +183,32 @@ class _ScreenBlockState extends State<ScreenBlock> {
                         String cmd = 's';
                         // print(ListBlock[0].left);
                         // print(ListBlock[0].size_Box.width);
-                        double Left_position = ListBlock[0].left;
-                        double Width = ListBlock[0].size_Box.width;
-                        for (int i = 1; i < ListBlock.length; i++) {
-                          if (ListBlock[i].top == ListBlock[0].top &&
-                              (ListBlock[i].left - Left_position) - Width ==
+                        double Left_position = listBlock[0].left;
+                        double Width = listBlock[0].size_Box.width;
+                        for (int i = 1; i < listBlock.length; i++) {
+                          if (listBlock[i].top == listBlock[0].top &&
+                              (listBlock[i].left - Left_position) - Width ==
                                   0) {
-                            Width = ListBlock[i].size_Box.width;
-                            Left_position = ListBlock[i].left;
-                            if (ListBlock[i].ModeBlock != null) {
-                              if (ListBlock[i].mode == 'Tiến' ||
-                                  ListBlock[i].mode == 'Lùi' ||
-                                  ListBlock[i].mode == 'Xoay Phải' ||
-                                  ListBlock[i].mode == 'Xoay Trái') {
+                            Width = listBlock[i].size_Box.width;
+                            Left_position = listBlock[i].left;
+                            if (listBlock[i].ModeBlock != null) {
+                              if (listBlock[i].mode == 'Tiến' ||
+                                  listBlock[i].mode == 'Lùi' ||
+                                  listBlock[i].mode == 'Xoay Phải' ||
+                                  listBlock[i].mode == 'Xoay Trái') {
                                 cmd = cmd +
                                     '/' +
-                                    LenhDieuKhien[ListBlock[i].mode]! +
-                                    ListBlock[i].ModeBlock!.getCmd_T;
+                                    LenhDieuKhien[listBlock[i].mode]! +
+                                    listBlock[i].ModeBlock!.getCmd_T;
                               } else {
                                 cmd = cmd +
                                     '/' +
-                                    LenhDieuKhien[ListBlock[i].mode]! +
-                                    ListBlock[i].ModeBlock!.getCmd_S;
+                                    LenhDieuKhien[listBlock[i].mode]! +
+                                    listBlock[i].ModeBlock!.getCmd_S;
                               }
                             } else {
                               cmd =
-                                  cmd + '/' + LenhDieuKhien[ListBlock[i].mode]!;
+                                  cmd + '/' + LenhDieuKhien[listBlock[i].mode]!;
                             }
                           }
                         }
@@ -242,32 +242,32 @@ class _ScreenBlockState extends State<ScreenBlock> {
                         double Position_e_left = e.left;
                         double Position_e_top = e.top;
                         double width_e = e.size_Box.width;
-                        double width_list = ListBlock[0].size_Box.width;
-                        ListBlock.remove(e);
-                        for (int i = 0; i < ListBlock.length; i++) {
-                          if (e.top > ListBlock[i].top + 0.01 &&
+                        double width_list = listBlock[0].size_Box.width;
+                        listBlock.remove(e);
+                        for (int i = 0; i < listBlock.length; i++) {
+                          if (e.top > listBlock[i].top - 20 &&
                               e.top <
-                                  ListBlock[i].top +
-                                      ListBlock[i].size_Box.height &&
-                              e.left > ListBlock[i].left + 0.01 &&
+                                  listBlock[i].top +
+                                      listBlock[i].size_Box.height &&
+                              e.left > listBlock[i].left + 0.01 &&
                               e.left <
-                                  ListBlock[i].left +
-                                      ListBlock[i].size_Box.width) {
+                                  listBlock[i].left +
+                                      listBlock[i].size_Box.width) {
                             // print(ListBlock[i].size_Box.width.toString() +
                             //     ' ' +
                             //     ListBlock[i].size_Box.height.toString() +
                             //     ListBlock[i].mode.toString());
                             isRemove = false;
-                            Position_e_top = ListBlock[i].top;
-                            width_list = ListBlock[i].size_Box.width;
-                            Position_e_left = ListBlock[i].left + width_list;
+                            Position_e_top = listBlock[i].top;
+                            width_list = listBlock[i].size_Box.width;
+                            Position_e_left = listBlock[i].left + width_list;
                             lelf_e = Position_e_left;
                             // print(ListBlock.length);
-                            for (int j = i; j < ListBlock.length; j++) {
-                              if (ListBlock[j].top == Position_e_top &&
-                                  ListBlock[j].left == lelf_e) {
-                                ListBlock[j].left = lelf_e + width_e;
-                                width_list = ListBlock[j].size_Box.width;
+                            for (int j = i; j < listBlock.length; j++) {
+                              if (listBlock[j].top == Position_e_top &&
+                                  listBlock[j].left == lelf_e) {
+                                listBlock[j].left = lelf_e + width_e;
+                                width_list = listBlock[j].size_Box.width;
                                 lelf_e = lelf_e + width_list;
                                 //print('co vao ori');
                                 //print(j);
@@ -278,7 +278,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
                             //   print(element.left);
                             // });
                             // print('---------');
-                            ListBlock.insert(
+                            listBlock.insert(
                               i + 1,
                               VitriBlock(
                                   top: Position_e_top,
@@ -286,27 +286,27 @@ class _ScreenBlockState extends State<ScreenBlock> {
                                   border: e.border,
                                   mode: e.mode),
                             );
-                            if (ListBlock[i + 1].ModeBlock != null) {
-                              ListBlock[i + 1].ModeBlock!.setCmdDelay =
+                            if (listBlock[i + 1].ModeBlock != null) {
+                              listBlock[i + 1].ModeBlock!.setCmdDelay =
                                   e.ModeBlock!.cmd_delay;
-                              ListBlock[i + 1].ModeBlock!.setCmdSpeed =
+                              listBlock[i + 1].ModeBlock!.setCmdSpeed =
                                   e.ModeBlock!.cmd_speed;
-                              ListBlock[i + 1].ModeBlock!.setCmdAngle =
+                              listBlock[i + 1].ModeBlock!.setCmdAngle =
                                   e.ModeBlock!.cmd_Angle;
-                              if (ListBlock[i + 1].ModeBlock!.cmd_delay !=
+                              if (listBlock[i + 1].ModeBlock!.cmd_delay !=
                                   '0') {
-                                ListBlock[i + 1].myController_delay.text =
-                                    ListBlock[i + 1].ModeBlock!.cmd_delay;
+                                listBlock[i + 1].myController_delay.text =
+                                    listBlock[i + 1].ModeBlock!.cmd_delay;
                               }
-                              if (ListBlock[i + 1].ModeBlock!.cmd_speed !=
+                              if (listBlock[i + 1].ModeBlock!.cmd_speed !=
                                   '0') {
-                                ListBlock[i + 1].myController_speed.text =
+                                listBlock[i + 1].myController_speed.text =
                                     e.ModeBlock!.cmd_speed;
                               }
 
-                              if (ListBlock[i + 1].ModeBlock!.cmd_Angle !=
+                              if (listBlock[i + 1].ModeBlock!.cmd_Angle !=
                                   '0') {
-                                ListBlock[i + 1].myController_angle.text =
+                                listBlock[i + 1].myController_angle.text =
                                     e.ModeBlock!.cmd_Angle;
                               }
                               // print(ListBlock[i + 1].myController_delay.text);
@@ -317,34 +317,34 @@ class _ScreenBlockState extends State<ScreenBlock> {
                           }
                         }
                         if (isRemove) {
-                          ListBlock.add(VitriBlock(
+                          listBlock.add(VitriBlock(
                               top: e.top,
                               left: e.left,
                               border: e.border,
                               mode: e.mode));
-                          if (ListBlock[ListBlock.length - 1].ModeBlock !=
+                          if (listBlock[listBlock.length - 1].ModeBlock !=
                               null) {
-                            ListBlock[ListBlock.length - 1]
+                            listBlock[listBlock.length - 1]
                                 .ModeBlock!
                                 .cmd_delay = e.ModeBlock!.cmd_delay;
-                            ListBlock[ListBlock.length - 1]
+                            listBlock[listBlock.length - 1]
                                 .ModeBlock!
                                 .cmd_speed = e.ModeBlock!.cmd_speed;
-                            ListBlock[ListBlock.length - 1]
+                            listBlock[listBlock.length - 1]
                                 .ModeBlock!
                                 .cmd_Angle = e.ModeBlock!.cmd_Angle;
                             if (e.ModeBlock!.cmd_delay != '0') {
-                              ListBlock[ListBlock.length - 1]
+                              listBlock[listBlock.length - 1]
                                   .myController_delay
                                   .text = e.ModeBlock!.cmd_delay;
                             }
                             if (e.ModeBlock!.cmd_speed != '0') {
-                              ListBlock[ListBlock.length - 1]
+                              listBlock[listBlock.length - 1]
                                   .myController_speed
                                   .text = e.ModeBlock!.cmd_speed;
                             }
                             if (e.ModeBlock!.cmd_Angle != '0') {
-                              ListBlock[ListBlock.length - 1]
+                              listBlock[listBlock.length - 1]
                                   .myController_angle
                                   .text = e.ModeBlock!.cmd_Angle;
                             }
@@ -363,12 +363,12 @@ class _ScreenBlockState extends State<ScreenBlock> {
                         double Left_e = e.left;
                         double size_e = e.size_Box.width;
                         double size_last = e.size_Box.width;
-                        for (int i = 1; i < ListBlock.length; i++) {
-                          if (ListBlock[i].top == e.top &&
-                              ListBlock[i].left == Left_e + size_last) {
-                            Left_e = ListBlock[i].left;
-                            ListBlock[i].GetLeft = ListBlock[i].left - size_e;
-                            size_last = ListBlock[i].size_Box.width;
+                        for (int i = 1; i < listBlock.length; i++) {
+                          if (listBlock[i].top == e.top &&
+                              listBlock[i].left == Left_e + size_last) {
+                            Left_e = listBlock[i].left;
+                            listBlock[i].GetLeft = listBlock[i].left - size_e;
+                            size_last = listBlock[i].size_Box.width;
                             print(i);
                             print(Left_e.toString() + ' ' + size_e.toString());
                             // if (i == ListBlock.length - 1) {
@@ -483,34 +483,34 @@ class _ScreenBlockState extends State<ScreenBlock> {
                                 String cmd = 's';
                                 // print(ListBlock[0].left);
                                 // print(ListBlock[0].size_Box.width);
-                                double Left_position = ListBlock[0].left;
-                                double Width = ListBlock[0].size_Box.width;
-                                for (int i = 1; i < ListBlock.length; i++) {
-                                  if (ListBlock[i].top == ListBlock[0].top &&
-                                      (ListBlock[i].left - Left_position) -
+                                double Left_position = listBlock[0].left;
+                                double Width = listBlock[0].size_Box.width;
+                                for (int i = 1; i < listBlock.length; i++) {
+                                  if (listBlock[i].top == listBlock[0].top &&
+                                      (listBlock[i].left - Left_position) -
                                               Width ==
                                           0) {
-                                    Width = ListBlock[i].size_Box.width;
-                                    Left_position = ListBlock[i].left;
-                                    if (ListBlock[i].ModeBlock != null) {
-                                      if (ListBlock[i].mode == 'Tiến' ||
-                                          ListBlock[i].mode == 'Lùi' ||
-                                          ListBlock[i].mode == 'Xoay Phải' ||
-                                          ListBlock[i].mode == 'Xoay Trái') {
+                                    Width = listBlock[i].size_Box.width;
+                                    Left_position = listBlock[i].left;
+                                    if (listBlock[i].ModeBlock != null) {
+                                      if (listBlock[i].mode == 'Tiến' ||
+                                          listBlock[i].mode == 'Lùi' ||
+                                          listBlock[i].mode == 'Xoay Phải' ||
+                                          listBlock[i].mode == 'Xoay Trái') {
                                         cmd = cmd +
                                             '/' +
-                                            LenhDieuKhien[ListBlock[i].mode]! +
-                                            ListBlock[i].ModeBlock!.getCmd_T;
+                                            LenhDieuKhien[listBlock[i].mode]! +
+                                            listBlock[i].ModeBlock!.getCmd_T;
                                       } else {
                                         cmd = cmd +
                                             '/' +
-                                            LenhDieuKhien[ListBlock[i].mode]! +
-                                            ListBlock[i].ModeBlock!.getCmd_S;
+                                            LenhDieuKhien[listBlock[i].mode]! +
+                                            listBlock[i].ModeBlock!.getCmd_S;
                                       }
                                     } else {
                                       cmd = cmd +
                                           '/' +
-                                          LenhDieuKhien[ListBlock[i].mode]!;
+                                          LenhDieuKhien[listBlock[i].mode]!;
                                     }
                                   }
                                 }
@@ -545,8 +545,8 @@ class _ScreenBlockState extends State<ScreenBlock> {
                             height: 40,
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                if (ListBlock.length > 1) {
-                                  ListBlock.removeAt(ListBlock.length - 1);
+                                if (listBlock.length > 1) {
+                                  listBlock.removeAt(listBlock.length - 1);
                                 }
                                 //print(ListBlock.length);
                                 setState(() {});

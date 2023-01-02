@@ -60,9 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'dancing'
   };
   SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
   bool _isListening = true;
-  String _lastWords = '';
   String _value = '';
   double top_servo1 = 0;
   double lefl_servo1 = 0;
@@ -172,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return _connection != null && _connection!.isConnected;
   }
 
+// vấn đề
   Future<void> getPairedDevices() async {
     List<BluetoothDevice> devices = [];
     try {
@@ -243,9 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
     }).catchError((onError) {
-      throw (onError);
-      print('Cannot connect, exception occurred');
       print(onError);
+      throw (onError);
     });
     setState(() {});
   }
@@ -262,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // mic
   void _initSpeech() async {
     try {
-      _speechEnabled = await _speechToText.initialize(onError: (error) {
+      await _speechToText.initialize(onError: (error) {
         print('erro');
       });
       setState(() {});
@@ -290,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       return true;
     });
-    var future = _speechToText.listen(
+    _speechToText.listen(
       onResult: _onSpeechResult,
       listenFor: Duration(seconds: 8),
       pauseFor: Duration(seconds: 5),
@@ -336,31 +334,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    print('Hello ' + size.height.toString() + ' ' + size.width.toString());
     int controll_x = 0;
     int controll_y = 0;
-    int controll_servo = 73;
+    //int controll_servo = 73;
 
     return Scaffold(
       body: SafeArea(
         child: Container(
-          width: size.width,
-          height: size.height,
           child: Stack(
             children: <Widget>[
-              Container(
-                height: size.height,
-                width: size.width,
-                child: WebView(
-                  initialUrl: "http://192.168.50.243:4747/video",
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onWebViewCreated: (controller) {
-                    this.controller = controller;
-                  },
-                  zoomEnabled: false,
-                ),
-              ),
+              // Container(
+              //   height: size.height,
+              //   width: size.width,
+              //   child: WebView(
+              //     initialUrl: "http://192.168.50.243:4747/video",
+              //     javascriptMode: JavascriptMode.unrestricted,
+              //     onWebViewCreated: (controller) {
+              //       this.controller = controller;
+              //     },
+              //     zoomEnabled: false,
+              //   ),
+              // ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Container(
                     width: 220,
@@ -468,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         Row(
-                          children: [
+                          children: <Widget>[
                             Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: Align(
@@ -537,22 +534,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               FlutterBluetoothSerial
                                                                   .instance
                                                                   .requestEnable();
-                                                          var resust =
-                                                              await LoadingApp
-                                                                  .Loading_Login(
-                                                                      context,
-                                                                      future);
+                                                          await LoadingApp
+                                                              .Loading_Login(
+                                                                  context,
+                                                                  future);
                                                           await getPairedDevices();
                                                         } else {
                                                           var future =
                                                               FlutterBluetoothSerial
                                                                   .instance
                                                                   .requestDisable();
-                                                          var resust =
-                                                              await LoadingApp
-                                                                  .Loading_Login(
-                                                                      context,
-                                                                      future);
+                                                          await LoadingApp
+                                                              .Loading_Login(
+                                                                  context,
+                                                                  future);
                                                         }
                                                       }
 
@@ -585,7 +580,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       .isEmpty
                                                                   ? null
                                                                   : (value) {
-                                                                      //print(value.toString());
+                                                                      print(value
+                                                                          .toString());
                                                                       _device =
                                                                           value
                                                                               as BluetoothDevice;
@@ -631,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               var futture =
                                                                   _connectBluetooth();
                                                               try {
-                                                                var result = await LoadingApp
+                                                                await LoadingApp
                                                                     .Loading_Login(
                                                                         context,
                                                                         futture);
@@ -775,9 +771,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  // SizedBox(
-                  //   width: size.width * 0.05,
-                  // ),
                   Spacer(),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -828,12 +821,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    width: 5,
                   )
                 ],
               ),
-              SizedBox(
-                width: 5,
-              )
             ],
           ),
         ),

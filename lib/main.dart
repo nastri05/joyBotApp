@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled1/home_screen/home_screen.dart';
-import 'package:untitled1/screen_block/sreen_block.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
