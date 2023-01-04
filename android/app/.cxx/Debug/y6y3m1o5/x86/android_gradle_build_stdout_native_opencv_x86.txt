@@ -1,0 +1,3 @@
+ninja: Entering directory `E:\hoc tap\20213\untitled1\android\app\.cxx\Debug\y6y3m1o5\x86'
+[1/2] Building CXX object CMakeFiles/native_opencv.dir/src/main/cpp/native_add.cpp.o
+[2/2] Linking CXX shared library "E:\hoc tap\20213\untitled1\build\app\intermediates\cxx\Debug\y6y3m1o5\obj\x86\libnative_opencv.so"
