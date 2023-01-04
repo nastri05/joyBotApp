@@ -51,9 +51,9 @@ class _ScreenBlockState extends State<ScreenBlock> {
     'Xoay Phải': 'R',
     'Xoay Trái': 'L',
     'Xoay Tròn': 'A',
-    'Servo 1': '1s',
-    'Servo 2': '2s',
-    'Servo 3': '3s',
+    'Servo 1': 's1:',
+    'Servo 2': 's2:',
+    'Servo 3': 's3:',
     'Chào': 'a1',
     'Vẫy Tay': 'a2',
     'Nghỉ': 'a3',
@@ -212,7 +212,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
                             }
                           }
                         }
-                        cmd = cmd + 'n';
+                        cmd = cmd + '/n';
                         print(cmd);
                         setState(() {});
                         // if (isConnect()) {
@@ -514,7 +514,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
                                     }
                                   }
                                 }
-                                cmd = cmd + 'n';
+                                cmd = cmd + '/n';
                                 print(cmd);
                                 setState(() {});
                                 // if (isConnect()) {

@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print('Hello ' + size.height.toString() + ' ' + size.width.toString());
+    //print('Hello ' + size.height.toString() + ' ' + size.width.toString());
     int controll_x = 0;
     int controll_y = 0;
     //int controll_servo = 73;
