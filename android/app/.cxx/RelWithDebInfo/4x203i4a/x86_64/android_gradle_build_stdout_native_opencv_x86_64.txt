@@ -1,0 +1,2 @@
+ninja: Entering directory `E:\hoc tap\20213\untitled1\android\app\.cxx\RelWithDebInfo\4x203i4a\x86_64'
+ninja: no work to do.

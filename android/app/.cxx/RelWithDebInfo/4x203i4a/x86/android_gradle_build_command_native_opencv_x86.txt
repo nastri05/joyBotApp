@@ -1,0 +1,7 @@
+Executable : C:\Users\ASUS\AppData\Local\Android\sdk\cmake\3.18.1\bin\ninja.exe
+arguments : 
+-C
+E:\hoc tap\20213\untitled1\android\app\.cxx\RelWithDebInfo\4x203i4a\x86
+native_opencv
+jvmArgs : 
+
