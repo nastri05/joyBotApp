@@ -12,9 +12,9 @@ class ScreenBlock extends StatefulWidget {
   // final BluetoothConnection connection;
   const ScreenBlock({
     super.key,
-    // required this.connection,
+    required this.connection,
   });
-
+  final BluetoothConnection connection;
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -26,6 +26,13 @@ class ScreenBlock extends StatefulWidget {
 
   @override
   State<ScreenBlock> createState() => _ScreenBlockState();
+}
+
+Uint8List convertStringToUint8List(String str) {
+  final List<int> codeUnits = str.codeUnits;
+  final Uint8List unit8List = Uint8List.fromList(codeUnits);
+
+  return unit8List;
 }
 
 class _ScreenBlockState extends State<ScreenBlock> {
@@ -41,6 +48,10 @@ class _ScreenBlockState extends State<ScreenBlock> {
     final Uint8List unit8List = Uint8List.fromList(codeUnits);
 
     return unit8List;
+  }
+
+  bool isConnect() {
+    return widget.connection != null && widget.connection!.isConnected;
   }
 
   bool IsClickBook = false;
@@ -113,6 +124,7 @@ class _ScreenBlockState extends State<ScreenBlock> {
     // than having to individually change instances of widgets.
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         key: _scaffoldKey,
         drawer: Drawer(
           width: 250,
@@ -147,427 +159,419 @@ class _ScreenBlockState extends State<ScreenBlock> {
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width + 400,
-              child: Stack(
-                children: <Widget>[
-                  ...listBlock.map(
-                    (e) => block(
-                      myController_angle: e.myController_angle,
-                      myController_speed: e.myController_speed,
-                      myController_delay: e.myController_delay,
-                      // myController: e.ModeBlock!.myController,
-                      onsubmitt_angle: (data) {
-                        e.ModeBlock!.setCmdAngle = data;
-                      },
-                      onsubmitt_delay: (data) {
-                        e.ModeBlock!.setCmdDelay = data;
-                        print(e.myController_delay.text);
-                        // e.myController_delay.text = e.ModeBlock!.cmd_delay;
-                        //setState(() {});
-                        // print(e.myController_delay.text);
-                      },
-                      onsubmitt_speed: (data) {
-                        e.ModeBlock!.setCmdSpeed = data;
-                        // e.ModeBlock!.myController.text = data;
-                        // print(e.ModeBlock.cmd_speed);
-                      },
-                      mode: e.mode,
-                      top: e.top,
-                      left: e.left,
-                      border: e.border,
-                      onTap: () async {
-                        String cmd = 's';
-                        // print(ListBlock[0].left);
-                        // print(ListBlock[0].size_Box.width);
-                        double Left_position = listBlock[0].left;
-                        double Width = listBlock[0].size_Box.width;
-                        for (int i = 1; i < listBlock.length; i++) {
-                          if (listBlock[i].top == listBlock[0].top &&
-                              (listBlock[i].left - Left_position) - Width ==
-                                  0) {
-                            Width = listBlock[i].size_Box.width;
-                            Left_position = listBlock[i].left;
-                            if (listBlock[i].ModeBlock != null) {
-                              if (listBlock[i].mode == 'Tiến' ||
-                                  listBlock[i].mode == 'Lùi' ||
-                                  listBlock[i].mode == 'Xoay Phải' ||
-                                  listBlock[i].mode == 'Xoay Trái') {
-                                cmd = cmd +
-                                    '/' +
-                                    LenhDieuKhien[listBlock[i].mode]! +
-                                    listBlock[i].ModeBlock!.getCmd_T;
-                              } else {
-                                cmd = cmd +
-                                    '/' +
-                                    LenhDieuKhien[listBlock[i].mode]! +
-                                    listBlock[i].ModeBlock!.getCmd_S;
-                              }
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width + 400,
+            child: Stack(
+              children: <Widget>[
+                ...listBlock.map(
+                  (e) => block(
+                    myController_angle: e.myController_angle,
+                    myController_speed: e.myController_speed,
+                    myController_delay: e.myController_delay,
+                    // myController: e.ModeBlock!.myController,
+                    onsubmitt_angle: (data) {
+                      e.ModeBlock!.setCmdAngle = data;
+                    },
+                    onsubmitt_delay: (data) {
+                      e.ModeBlock!.setCmdDelay = data;
+                      print(e.myController_delay.text);
+                      // e.myController_delay.text = e.ModeBlock!.cmd_delay;
+                      //setState(() {});
+                      // print(e.myController_delay.text);
+                    },
+                    onsubmitt_speed: (data) {
+                      e.ModeBlock!.setCmdSpeed = data;
+                      // e.ModeBlock!.myController.text = data;
+                      // print(e.ModeBlock.cmd_speed);
+                    },
+                    mode: e.mode,
+                    top: e.top,
+                    left: e.left,
+                    border: e.border,
+                    onTap: () async {
+                      String cmd = 'Z';
+                      // print(ListBlock[0].left);
+                      // print(ListBlock[0].size_Box.width);
+                      double Left_position = listBlock[0].left;
+                      double Width = listBlock[0].size_Box.width;
+                      for (int i = 1; i < listBlock.length; i++) {
+                        if (listBlock[i].top == listBlock[0].top &&
+                            (listBlock[i].left - Left_position) - Width == 0) {
+                          Width = listBlock[i].size_Box.width;
+                          Left_position = listBlock[i].left;
+                          if (listBlock[i].ModeBlock != null) {
+                            if (listBlock[i].mode == 'Tiến' ||
+                                listBlock[i].mode == 'Lùi' ||
+                                listBlock[i].mode == 'Xoay Phải' ||
+                                listBlock[i].mode == 'Xoay Trái') {
+                              cmd = cmd +
+                                  '/' +
+                                  LenhDieuKhien[listBlock[i].mode]! +
+                                  listBlock[i].ModeBlock!.getCmd_T;
                             } else {
-                              cmd =
-                                  cmd + '/' + LenhDieuKhien[listBlock[i].mode]!;
+                              cmd = cmd +
+                                  '/' +
+                                  LenhDieuKhien[listBlock[i].mode]! +
+                                  listBlock[i].ModeBlock!.getCmd_S;
                             }
+                          } else {
+                            cmd = cmd + '/' + LenhDieuKhien[listBlock[i].mode]!;
                           }
                         }
-                        cmd = cmd + '/n';
-                        print(cmd);
-                        setState(() {});
-                        // if (isConnect()) {
-                        //   try {
-                        //     widget.connection!.output.add(
-                        //       convertStringToUint8List(cmd),
-                        //     );
-                        //     await widget.connection!.output.allSent;
-                        //   } catch (error) {
-                        //     print(error);
-                        //   }
-                        // }
-                      },
-                      onPanUpdate: (element) {
-                        e.GetTop = max(0, e.top + element.delta.dy);
-                        e.left = max(0, e.left + element.delta.dx);
-                        setState(() {});
-                      },
-                      onPanEnd: (value) {
-                        //print(e.ModeBlock.myController.text + ' day la dc');
-                        setState(() {
-                          IsClickBook = false;
-                          e.GetBorder = false;
-                        });
-                        bool isRemove = true;
-                        double lelf_e = e.left;
-                        double Position_e_left = e.left;
-                        double Position_e_top = e.top;
-                        double width_e = e.size_Box.width;
-                        double width_list = listBlock[0].size_Box.width;
-                        listBlock.remove(e);
-                        for (int i = 0; i < listBlock.length; i++) {
-                          if (e.top > listBlock[i].top - 20 &&
-                              e.top <
-                                  listBlock[i].top +
-                                      listBlock[i].size_Box.height &&
-                              e.left > listBlock[i].left + 0.01 &&
-                              e.left <
-                                  listBlock[i].left +
-                                      listBlock[i].size_Box.width) {
-                            // print(ListBlock[i].size_Box.width.toString() +
-                            //     ' ' +
-                            //     ListBlock[i].size_Box.height.toString() +
-                            //     ListBlock[i].mode.toString());
-                            isRemove = false;
-                            Position_e_top = listBlock[i].top;
-                            width_list = listBlock[i].size_Box.width;
-                            Position_e_left = listBlock[i].left + width_list;
-                            lelf_e = Position_e_left;
-                            // print(ListBlock.length);
-                            for (int j = i; j < listBlock.length; j++) {
-                              if (listBlock[j].top == Position_e_top &&
-                                  listBlock[j].left == lelf_e) {
-                                listBlock[j].left = lelf_e + width_e;
-                                width_list = listBlock[j].size_Box.width;
-                                lelf_e = lelf_e + width_list;
-                                //print('co vao ori');
-                                //print(j);
-                                setState(() {});
-                              }
+                      }
+                      cmd = cmd + '/n';
+                      print(cmd);
+                      if (isConnect()) {
+                        try {
+                          widget.connection!.output
+                              .add(convertStringToUint8List(cmd));
+                          await widget.connection!.output.allSent;
+                        } catch (error) {
+                          //print(error);
+                        }
+                      }
+                      setState(() {});
+                    },
+                    onPanUpdate: (element) {
+                      e.GetTop = max(0, e.top + element.delta.dy);
+                      e.left = max(0, e.left + element.delta.dx);
+                      setState(() {});
+                    },
+                    onPanEnd: (value) {
+                      //print(e.ModeBlock.myController.text + ' day la dc');
+                      setState(() {
+                        IsClickBook = false;
+                        e.GetBorder = false;
+                      });
+                      bool isRemove = true;
+                      double lelf_e = e.left;
+                      double Position_e_left = e.left;
+                      double Position_e_top = e.top;
+                      double width_e = e.size_Box.width;
+                      double width_list = listBlock[0].size_Box.width;
+                      listBlock.remove(e);
+                      for (int i = 0; i < listBlock.length; i++) {
+                        if (e.top > listBlock[i].top - 20 &&
+                            e.top <
+                                listBlock[i].top +
+                                    listBlock[i].size_Box.height &&
+                            e.left > listBlock[i].left + 0.01 &&
+                            e.left <
+                                listBlock[i].left +
+                                    listBlock[i].size_Box.width) {
+                          // print(ListBlock[i].size_Box.width.toString() +
+                          //     ' ' +
+                          //     ListBlock[i].size_Box.height.toString() +
+                          //     ListBlock[i].mode.toString());
+                          isRemove = false;
+                          Position_e_top = listBlock[i].top;
+                          width_list = listBlock[i].size_Box.width;
+                          Position_e_left = listBlock[i].left + width_list;
+                          lelf_e = Position_e_left;
+                          // print(ListBlock.length);
+                          for (int j = i; j < listBlock.length; j++) {
+                            if (listBlock[j].top == Position_e_top &&
+                                listBlock[j].left == lelf_e) {
+                              listBlock[j].left = lelf_e + width_e;
+                              width_list = listBlock[j].size_Box.width;
+                              lelf_e = lelf_e + width_list;
+                              //print('co vao ori');
+                              //print(j);
+                              setState(() {});
                             }
-                            // ListBlock.forEach((element) {
-                            //   print(element.left);
-                            // });
-                            // print('---------');
-                            listBlock.insert(
-                              i + 1,
-                              VitriBlock(
-                                  top: Position_e_top,
-                                  left: Position_e_left,
-                                  border: e.border,
-                                  mode: e.mode),
-                            );
-                            if (listBlock[i + 1].ModeBlock != null) {
-                              listBlock[i + 1].ModeBlock!.setCmdDelay =
-                                  e.ModeBlock!.cmd_delay;
-                              listBlock[i + 1].ModeBlock!.setCmdSpeed =
+                          }
+                          // ListBlock.forEach((element) {
+                          //   print(element.left);
+                          // });
+                          // print('---------');
+                          listBlock.insert(
+                            i + 1,
+                            VitriBlock(
+                                top: Position_e_top,
+                                left: Position_e_left,
+                                border: e.border,
+                                mode: e.mode),
+                          );
+                          if (listBlock[i + 1].ModeBlock != null) {
+                            listBlock[i + 1].ModeBlock!.setCmdDelay =
+                                e.ModeBlock!.cmd_delay;
+                            listBlock[i + 1].ModeBlock!.setCmdSpeed =
+                                e.ModeBlock!.cmd_speed;
+                            listBlock[i + 1].ModeBlock!.setCmdAngle =
+                                e.ModeBlock!.cmd_Angle;
+                            if (listBlock[i + 1].ModeBlock!.cmd_delay != '0') {
+                              listBlock[i + 1].myController_delay.text =
+                                  listBlock[i + 1].ModeBlock!.cmd_delay;
+                            }
+                            if (listBlock[i + 1].ModeBlock!.cmd_speed != '0') {
+                              listBlock[i + 1].myController_speed.text =
                                   e.ModeBlock!.cmd_speed;
-                              listBlock[i + 1].ModeBlock!.setCmdAngle =
+                            }
+
+                            if (listBlock[i + 1].ModeBlock!.cmd_Angle != '0') {
+                              listBlock[i + 1].myController_angle.text =
                                   e.ModeBlock!.cmd_Angle;
-                              if (listBlock[i + 1].ModeBlock!.cmd_delay !=
-                                  '0') {
-                                listBlock[i + 1].myController_delay.text =
-                                    listBlock[i + 1].ModeBlock!.cmd_delay;
-                              }
-                              if (listBlock[i + 1].ModeBlock!.cmd_speed !=
-                                  '0') {
-                                listBlock[i + 1].myController_speed.text =
-                                    e.ModeBlock!.cmd_speed;
-                              }
-
-                              if (listBlock[i + 1].ModeBlock!.cmd_Angle !=
-                                  '0') {
-                                listBlock[i + 1].myController_angle.text =
-                                    e.ModeBlock!.cmd_Angle;
-                              }
-                              // print(ListBlock[i + 1].myController_delay.text);
                             }
-
-                            setState(() {});
-                            break;
+                            // print(ListBlock[i + 1].myController_delay.text);
                           }
+
+                          setState(() {});
+                          break;
                         }
-                        if (isRemove) {
-                          listBlock.add(VitriBlock(
-                              top: e.top,
-                              left: e.left,
-                              border: e.border,
-                              mode: e.mode));
-                          if (listBlock[listBlock.length - 1].ModeBlock !=
-                              null) {
+                      }
+                      if (isRemove) {
+                        listBlock.add(VitriBlock(
+                            top: e.top,
+                            left: e.left,
+                            border: e.border,
+                            mode: e.mode));
+                        if (listBlock[listBlock.length - 1].ModeBlock != null) {
+                          listBlock[listBlock.length - 1].ModeBlock!.cmd_delay =
+                              e.ModeBlock!.cmd_delay;
+                          listBlock[listBlock.length - 1].ModeBlock!.cmd_speed =
+                              e.ModeBlock!.cmd_speed;
+                          listBlock[listBlock.length - 1].ModeBlock!.cmd_Angle =
+                              e.ModeBlock!.cmd_Angle;
+                          if (e.ModeBlock!.cmd_delay != '0') {
                             listBlock[listBlock.length - 1]
-                                .ModeBlock!
-                                .cmd_delay = e.ModeBlock!.cmd_delay;
-                            listBlock[listBlock.length - 1]
-                                .ModeBlock!
-                                .cmd_speed = e.ModeBlock!.cmd_speed;
-                            listBlock[listBlock.length - 1]
-                                .ModeBlock!
-                                .cmd_Angle = e.ModeBlock!.cmd_Angle;
-                            if (e.ModeBlock!.cmd_delay != '0') {
-                              listBlock[listBlock.length - 1]
-                                  .myController_delay
-                                  .text = e.ModeBlock!.cmd_delay;
-                            }
-                            if (e.ModeBlock!.cmd_speed != '0') {
-                              listBlock[listBlock.length - 1]
-                                  .myController_speed
-                                  .text = e.ModeBlock!.cmd_speed;
-                            }
-                            if (e.ModeBlock!.cmd_Angle != '0') {
-                              listBlock[listBlock.length - 1]
-                                  .myController_angle
-                                  .text = e.ModeBlock!.cmd_Angle;
-                            }
-
-                            // print(
-                            //     ListBlock[ListBlock.length - 1].ModeBlock.getCmd_T);
+                                .myController_delay
+                                .text = e.ModeBlock!.cmd_delay;
                           }
+                          if (e.ModeBlock!.cmd_speed != '0') {
+                            listBlock[listBlock.length - 1]
+                                .myController_speed
+                                .text = e.ModeBlock!.cmd_speed;
+                          }
+                          if (e.ModeBlock!.cmd_Angle != '0') {
+                            listBlock[listBlock.length - 1]
+                                .myController_angle
+                                .text = e.ModeBlock!.cmd_Angle;
+                          }
+
+                          // print(
+                          //     ListBlock[ListBlock.length - 1].ModeBlock.getCmd_T);
+                        }
+                        setState(() {});
+                      }
+                    },
+                    onPanStart: (data) {
+                      setState(() {
+                        IsClickBook = true;
+                        e.GetBorder = true;
+                      });
+                      double Left_e = e.left;
+                      double size_e = e.size_Box.width;
+                      double size_last = e.size_Box.width;
+                      for (int i = 1; i < listBlock.length; i++) {
+                        if (listBlock[i].top == e.top &&
+                            listBlock[i].left == Left_e + size_last) {
+                          Left_e = listBlock[i].left;
+                          listBlock[i].GetLeft = listBlock[i].left - size_e;
+                          size_last = listBlock[i].size_Box.width;
+                          print(i);
+                          print(Left_e.toString() + ' ' + size_e.toString());
+                          // if (i == ListBlock.length - 1) {
+                          //   break;
+                          // }
                           setState(() {});
                         }
-                      },
-                      onPanStart: (data) {
-                        setState(() {
-                          IsClickBook = true;
-                          e.GetBorder = true;
-                        });
-                        double Left_e = e.left;
-                        double size_e = e.size_Box.width;
-                        double size_last = e.size_Box.width;
-                        for (int i = 1; i < listBlock.length; i++) {
-                          if (listBlock[i].top == e.top &&
-                              listBlock[i].left == Left_e + size_last) {
-                            Left_e = listBlock[i].left;
-                            listBlock[i].GetLeft = listBlock[i].left - size_e;
-                            size_last = listBlock[i].size_Box.width;
-                            print(i);
-                            print(Left_e.toString() + ' ' + size_e.toString());
-                            // if (i == ListBlock.length - 1) {
-                            //   break;
-                            // }
-                            setState(() {});
-                          }
-                        }
-                      },
-                    ),
+                      }
+                    },
                   ),
-                  Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Column(
-                            children: [
-                              Container(
-                                height: 40,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Ink(
-                                    decoration: BoxDecoration(
-                                        gradient: const LinearGradient(colors: [
-                                          Colors.pink,
-                                          Colors.purple
-                                        ]),
-                                        borderRadius: BorderRadius.circular(8)),
-                                    child: Container(
-                                      height: 40,
-                                      width: 70,
-                                      alignment: Alignment.center,
-                                      child: Icon(
-                                        CupertinoIcons.back,
-                                        size: 20,
-                                      ),
-                                    ),
+                ),
+                Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              height: 40,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Container(
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                ListViewBlock = ListBlockDc;
-                                ListColor = Colors.red;
-                                //print(ListBlock.length);
-                                setState(() {});
-                                _openDrawer();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Ink(
+                                  decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                          colors: [Colors.pink, Colors.purple]),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Container(
+                                    height: 40,
+                                    width: 70,
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      CupertinoIcons.back,
+                                      size: 20,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              icon: Icon(Icons.add),
-                              label: Text('Động cơ '),
                             ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Container(
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                ListViewBlock = ListBlockTayMay;
-                                ListColor = Colors.blue.shade900;
-                                setState(() {});
-                                //print(ListBlock.length);
-                                _openDrawer();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue.shade900,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          height: 40,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              ListViewBlock = ListBlockDc;
+                              ListColor = Colors.red;
+                              //print(ListBlock.length);
+                              setState(() {});
+                              _openDrawer();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              icon: Icon(Icons.add),
-                              label: Text('Cánh tay'),
                             ),
+                            icon: Icon(Icons.add),
+                            label: Text('Động cơ '),
                           ),
-                          SizedBox(
-                            width: 20,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          height: 40,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              ListViewBlock = ListBlockTayMay;
+                              ListColor = Colors.blue.shade900;
+                              setState(() {});
+                              //print(ListBlock.length);
+                              _openDrawer();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue.shade900,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            icon: Icon(Icons.add),
+                            label: Text('Cánh tay'),
                           ),
-                          Container(
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              onPressed: () async {
-                                String cmd = 's';
-                                // print(ListBlock[0].left);
-                                // print(ListBlock[0].size_Box.width);
-                                double Left_position = listBlock[0].left;
-                                double Width = listBlock[0].size_Box.width;
-                                for (int i = 1; i < listBlock.length; i++) {
-                                  if (listBlock[i].top == listBlock[0].top &&
-                                      (listBlock[i].left - Left_position) -
-                                              Width ==
-                                          0) {
-                                    Width = listBlock[i].size_Box.width;
-                                    Left_position = listBlock[i].left;
-                                    if (listBlock[i].ModeBlock != null) {
-                                      if (listBlock[i].mode == 'Tiến' ||
-                                          listBlock[i].mode == 'Lùi' ||
-                                          listBlock[i].mode == 'Xoay Phải' ||
-                                          listBlock[i].mode == 'Xoay Trái') {
-                                        cmd = cmd +
-                                            '/' +
-                                            LenhDieuKhien[listBlock[i].mode]! +
-                                            listBlock[i].ModeBlock!.getCmd_T;
-                                      } else {
-                                        cmd = cmd +
-                                            '/' +
-                                            LenhDieuKhien[listBlock[i].mode]! +
-                                            listBlock[i].ModeBlock!.getCmd_S;
-                                      }
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          height: 40,
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              String cmd = 'Z';
+                              // print(ListBlock[0].left);
+                              // print(ListBlock[0].size_Box.width);
+                              double Left_position = listBlock[0].left;
+                              double Width = listBlock[0].size_Box.width;
+                              for (int i = 1; i < listBlock.length; i++) {
+                                if (listBlock[i].top == listBlock[0].top &&
+                                    (listBlock[i].left - Left_position) -
+                                            Width ==
+                                        0) {
+                                  Width = listBlock[i].size_Box.width;
+                                  Left_position = listBlock[i].left;
+                                  if (listBlock[i].ModeBlock != null) {
+                                    if (listBlock[i].mode == 'Tiến' ||
+                                        listBlock[i].mode == 'Lùi' ||
+                                        listBlock[i].mode == 'Xoay Phải' ||
+                                        listBlock[i].mode == 'Xoay Trái') {
+                                      cmd = cmd +
+                                          '/' +
+                                          LenhDieuKhien[listBlock[i].mode]! +
+                                          listBlock[i].ModeBlock!.getCmd_T;
                                     } else {
                                       cmd = cmd +
                                           '/' +
-                                          LenhDieuKhien[listBlock[i].mode]!;
+                                          LenhDieuKhien[listBlock[i].mode]! +
+                                          listBlock[i].ModeBlock!.getCmd_S;
                                     }
+                                  } else {
+                                    cmd = cmd +
+                                        '/' +
+                                        LenhDieuKhien[listBlock[i].mode]!;
                                   }
                                 }
-                                cmd = cmd + '/n';
-                                print(cmd);
-                                setState(() {});
-                                // if (isConnect()) {
-                                //   try {
-                                //     widget.connection!.output.add(
-                                //       convertStringToUint8List(cmd),
-                                //     );
-                                //     await widget.connection!.output.allSent;
-                                //   } catch (error) {
-                                //     print(error);
-                                //   }
-                                // }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green.shade900,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                              }
+                              cmd = cmd + '/n';
+                              print(cmd);
+                              try {
+                                widget.connection!.output
+                                    .add(convertStringToUint8List(cmd));
+                                await widget.connection!.output.allSent;
+                              } catch (error) {
+                                //print(error);
+                              }
+                              setState(() {});
+                              // if (isConnect()) {
+                              //   try {
+                              //     widget.connection!.output.add(
+                              //       convertStringToUint8List(cmd),
+                              //     );
+                              //     await widget.connection!.output.allSent;
+                              //   } catch (error) {
+                              //     print(error);
+                              //   }
+                              // }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green.shade900,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              icon: Icon(Icons.start),
-                              label: Text('Chạy'),
                             ),
+                            icon: Icon(Icons.start),
+                            label: Text('Chạy'),
                           ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Container(
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                if (listBlock.length > 1) {
-                                  listBlock.removeAt(listBlock.length - 1);
-                                }
-                                //print(ListBlock.length);
-                                setState(() {});
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.purple,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          height: 40,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              if (listBlock.length > 1) {
+                                listBlock.removeAt(listBlock.length - 1);
+                              }
+                              //print(ListBlock.length);
+                              setState(() {});
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              icon: Icon(Icons.remove),
-                              label: Text('Xóa'),
                             ),
+                            icon: Icon(Icons.remove),
+                            label: Text('Xóa'),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-                // This trailing comma makes auto-formatting nicer for build methods.
-              ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+              // This trailing comma makes auto-formatting nicer for build methods.
             ),
           ),
         ),

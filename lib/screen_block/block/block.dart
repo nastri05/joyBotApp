@@ -71,6 +71,7 @@ class _blockState extends State<block> {
   };
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
       child: Positioned(
         top: widget.top,

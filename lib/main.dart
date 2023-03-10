@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:untitled1/home_screen/home_screen.dart';
-import 'package:untitled1/native_screen/native_screen.dart';
+import 'package:untitled1/native_screen/procesimage.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +23,9 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: NativeScreen(),
-      //HomeScreen(),
+      home: HomeScreen(),
+      //NativeScreen(),
+      //
       //ScreenBlock(),
       //HomeScreen(),
     );

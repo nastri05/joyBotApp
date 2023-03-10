@@ -1,0 +1,1 @@
+ninja: error: 'E:/hoc tap/20213/tools/OpenCV-android-sdk/sdk/native/3rdparty/libs/x86/libippiw.a', needed by 'E:/hoc tap/20213/untitled1/build/app/intermediates/cxx/Debug/y6y3m1o5/obj/x86/libnative_opencv.so', missing and no known rule to make it

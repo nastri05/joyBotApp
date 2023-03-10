@@ -10,12 +10,19 @@ import 'package:untitled1/home_screen/joystick/joys_tick_custom.dart';
 import 'package:untitled1/home_screen/loading/loading_app.dart';
 import 'package:untitled1/home_screen/show_dialog_title/show_dialog_title.dart';
 import 'package:untitled1/home_screen/slider_circle/controll_circle.dart';
+import 'package:untitled1/native_screen/procesimage.dart';
 import 'package:untitled1/screen_block/sreen_block.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import 'slider_circle/custom_slider.dart';
+import 'slider_circle/gradient_rect_slider_track_shape.dart';
+
+class ActionSpeech {
+  late String codeBL;
+  late String ma_chinh_xac;
+  ActionSpeech(this.codeBL, this.ma_chinh_xac);
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -35,33 +42,37 @@ class _HomeScreenState extends State<HomeScreen> {
   List<DropdownMenuItem<BluetoothDevice>> ComboxList = [];
   bool _connect = false;
   bool _disconnect = false;
+  double lastval = 0;
   late WebViewController controller;
-  Set<String> listToTalk = {
-    'Hello Google',
-    'hello Google',
-    'hey Google',
-    'Hey Google',
-    'hey robot',
-    ' Hello Google',
-    'hello.',
-    'hello robot',
-    'hello robo',
-    'turn around',
-    'hands up',
-    'hands down',
-    'hand up',
-    'where are you now',
-    'are you happy',
-    'are you a robot',
-    'are you robot',
-    'him down',
-    'and down',
-    'you are dancing',
-    'dancing'
+  Map<String, ActionSpeech> listToTalk = {
+    'bắt tay': ActionSpeech('a8', 'Bắt tay'),
+    'Hello': ActionSpeech('a1', 'Xin Chào'),
+    'hello ': ActionSpeech('a1', 'Xin Chào'),
+    'hey robot': ActionSpeech('a1', 'Xin Chào'),
+    'xin chào': ActionSpeech('a1', 'Xin Chào'),
+    'hello robot': ActionSpeech('a1', 'Xin Chào'),
+    'Xin chào': ActionSpeech('a1', 'Xin Chào'),
+    'hello robo': ActionSpeech('a1', 'Xin Chào'),
+    'quay tròn': ActionSpeech('a2', 'Quay vòng'),
+    'giơ tay': ActionSpeech('a3', 'Giơ Tay Lên'),
+    'hạ tat': ActionSpeech('a4', 'Giơ Tay Xuống'),
+    'Bạn đang ở đâu': ActionSpeech('a4', 'Bạn đang ở đâu ?'),
+    'cảm ơn': ActionSpeech('a5', 'Cảm ơn'),
+    'are you a robot': ActionSpeech('a6', 'Bạn có phải Robot không ?'),
+    'Bạn có phải người máy không':
+        ActionSpeech('a6', 'Bạn có phải Robot không ?'),
+    'nhảy': ActionSpeech('a7', 'Bạn đang nhảy'),
+    'đi lên': ActionSpeech('a0', 'Đi lên'),
+    'đi lùi': ActionSpeech('a9', 'Đi lùi'),
   };
+  String data_url = "192.168.1.165";
   SpeechToText _speechToText = SpeechToText();
   bool _isListening = true;
   String _value = '';
+  double rating = 50;
+  ActionSpeech exactlyData = ActionSpeech('', '');
+  double top_servo1_last = 0;
+  double top_servo2_last = 0;
   double top_servo1 = 0;
   double lefl_servo1 = 0;
   double top_servo2 = 0;
@@ -90,20 +101,32 @@ class _HomeScreenState extends State<HomeScreen> {
       lefl_servo1 =
           -(sqrt(160 * 160 - (top_servo1 - 160) * (top_servo1 - 160))) + 160;
     }
-    //_top = min(_top, 180);
-    if (isConnect()) {
+    // print(top_servo1);
+    // print(lefl_servo1);
+    print('gia tri' +
+        ((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180)
+            .toInt()
+            .toString());
+    if (isConnect() &&
+        (top_servo1 < top_servo1_last - 5 ||
+            top_servo1 > top_servo1_last + 5)) {
       try {
-        _connection!.output.add(convertStringToUint8List(
-            's1:' + ((160 - top_servo1) / 160 * 180).toInt().toString() + 'n'));
+        _connection!.output.add(convertStringToUint8List('s3:' +
+            ((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180)
+                .toInt()
+                .toString() +
+            'n'));
+        top_servo1_last = top_servo1;
         await _connection!.output.allSent;
       } catch (error) {
         //print(error);
       }
     }
+    //_top = min(_top, 180);
     // print(lefl_servo1);
     // // print(top);
     // print('-------');
-    print(((160 - top_servo1) / 160 * 180).toInt());
+    //print(((160 - top_servo1) / 160 * 180).toInt());
     setState(() {});
   }
 
@@ -121,10 +144,23 @@ class _HomeScreenState extends State<HomeScreen> {
       lefl_servo2 =
           -(sqrt(110 * 110 - (top_servo2 - 160) * (top_servo2 - 160))) + 160;
     }
-    if (isConnect()) {
+    // print('a' + top_servo2.toString());
+    // print(lefl_servo2);
+    print(
+        (atan((160 - top_servo2) / (160 - lefl_servo2)) * 110 * 135 / 173 + 50)
+            .toInt()
+            .toString());
+    if (isConnect() &&
+        (top_servo2 < top_servo2_last - 5 ||
+            top_servo2 > top_servo2_last + 5)) {
       try {
-        _connection!.output.add(convertStringToUint8List(
-            's1:' + ((160 - top_servo2) / 160 * 180).toInt().toString() + 'n'));
+        _connection!.output.add(convertStringToUint8List('s2:' +
+            (atan((160 - top_servo2) / (160 - lefl_servo2)) * 110 * 135 / 173 +
+                    50)
+                .toInt()
+                .toString() +
+            'n'));
+        top_servo2_last = top_servo2;
         await _connection!.output.allSent;
       } catch (error) {
         //print(error);
@@ -133,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // print(lefl_servo2);
     // print(top_servo2);
     // print('-------');
-    print(((160 - top_servo2) / 160 * 180).toInt());
+    //print(((160 - top_servo2) / 160 * 180).toInt());
     // print('=======');
     setState(() {});
   }
@@ -170,7 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return _connection != null && _connection!.isConnected;
   }
 
-// vấn đề
   Future<void> getPairedDevices() async {
     List<BluetoothDevice> devices = [];
     try {
@@ -179,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print('error');
     }
     devices.forEach((element) {
-      print(element.name);
+      //print(element.name);
     });
     if (devices.isEmpty) {
       _devicesList = devices;
@@ -294,11 +329,22 @@ class _HomeScreenState extends State<HomeScreen> {
       pauseFor: Duration(seconds: 5),
     );
     var future123 = LoadingApp.Loading_Mic(context, future_close);
-    future123.whenComplete(() {
+    future123.whenComplete(() async {
       if (_speechToText.isNotListening && _isListening) {
         ShowDialogTitle.ShowLoi(context);
         _isListening = false;
         setState(() {});
+      } else {
+        print('Chạy đc');
+        try {
+          _connection!.output
+              .add(convertStringToUint8List(exactlyData.codeBL + 'n'));
+          await _connection!.output.allSent;
+        } catch (error) {
+          //print(error);
+        }
+        ShowDialogTitle.MyShowTitle(
+            context, 'Gửi thành công', exactlyData.ma_chinh_xac);
       }
     });
     setState(() {});
@@ -309,11 +355,13 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_value != result.recognizedWords) {
         print(result.recognizedWords);
         _value = result.recognizedWords;
-        listToTalk.forEach((element1) {
+        listToTalk.forEach((element1, data) async {
           if (element1 == _value) {
             _isListening = false;
             print('chuẩn nhé');
+            exactlyData = data;
             _speechToText.stop();
+            // _stopListening;
             setState(() {});
           }
         });
@@ -344,18 +392,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Container(
           child: Stack(
             children: <Widget>[
-              // Container(
-              //   height: size.height,
-              //   width: size.width,
-              //   child: WebView(
-              //     initialUrl: "http://192.168.50.243:4747/video",
-              //     javascriptMode: JavascriptMode.unrestricted,
-              //     onWebViewCreated: (controller) {
-              //       this.controller = controller;
-              //     },
-              //     zoomEnabled: false,
-              //   ),
-              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -379,13 +415,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    if (!isConnect()) {
+                                    if (isConnect()) {
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ScreenBlock(
-                                              //connection: _connection!,
-                                              ),
+                                            connection: _connection!,
+                                          ),
                                         ),
                                       );
                                     } else {
@@ -428,19 +464,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    bool result =
-                                        await InternetConnectionChecker()
-                                            .hasConnection;
-                                    if (result) {
-                                      controller.loadUrl(
-                                          "http://192.168.50.243:4747/video");
-                                    } else {
-                                      await ShowDialogTitle.MyShowDialogTitle(
-                                        context,
-                                        'Kiểm tra lại kết nối mạng',
-                                        'Hãy thử lại',
-                                      );
-                                    }
+                                    data_url = await ShowDialogTitle.GetUrl(
+                                        context, data_url);
+                                    setState(() {
+                                      print(data_url);
+                                    });
+                                    //print(data);
+
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProcessImage(
+                                          Url_socketweb: data_url,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: Ink(
                                     decoration: BoxDecoration(
@@ -455,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: 50,
                                       alignment: Alignment.center,
                                       child: const Icon(
-                                        CupertinoIcons.arrow_2_circlepath,
+                                        CupertinoIcons.camera,
                                       ),
                                     ),
                                   ),
@@ -477,7 +515,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    // them 1
+                                    var future = getPairedDevices();
+                                    await LoadingApp.Loading_Login(
+                                        context, future);
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -773,6 +815,110 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Spacer(),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onPanEnd: (data) async {
+                              print("nhả");
+                              if (isConnect()) {
+                                try {
+                                  _connection!.output
+                                      .add(convertStringToUint8List('m:'
+                                              '0' +
+                                          '/' +
+                                          '0' +
+                                          'n'));
+                                  await _connection!.output.allSent;
+                                } catch (error) {
+                                  //print(error);
+                                }
+                              }
+                            },
+                            onPanStart: (data) async {
+                              print("Nhấn");
+                              if (isConnect()) {
+                                try {
+                                  _connection!.output
+                                      .add(convertStringToUint8List('m:aln'));
+                                  await _connection!.output.allSent;
+                                } catch (error) {
+                                  //print(error);
+                                }
+                              }
+                            },
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle, // circular shape
+                                gradient: LinearGradient(
+                                  colors: [Colors.pink, Colors.purple],
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.swipe_left,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 30,
+                          ),
+                          GestureDetector(
+                            onPanEnd: (data) async {
+                              print("nhả");
+                              if (isConnect()) {
+                                try {
+                                  _connection!.output
+                                      .add(convertStringToUint8List('m:'
+                                              '0' +
+                                          '/' +
+                                          '0' +
+                                          'n'));
+                                  await _connection!.output.allSent;
+                                } catch (error) {
+                                  //print(error);
+                                }
+                              }
+                            },
+                            onPanStart: (data) async {
+                              print("Nhấn");
+                              if (isConnect()) {
+                                try {
+                                  _connection!.output
+                                      .add(convertStringToUint8List('m:arn'));
+                                  await _connection!.output.allSent;
+                                } catch (error) {
+                                  //print(error);
+                                }
+                              }
+                            },
+                            child: Container(
+                              height: 60,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle, // circular shape
+                                gradient: LinearGradient(
+                                  colors: [Colors.pink, Colors.purple],
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.swipe_right,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                    ],
+                  ),
+                  Spacer(),
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       SizedBox(
@@ -806,11 +952,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   top: top_servo2,
                                   lefl: lefl_servo2,
                                   onUpdate: Controll_Circle2,
+                                  onEnd: (data) async {},
                                 ),
                                 ControllCircle(
                                   top: top_servo1,
                                   lefl: lefl_servo1,
                                   onUpdate: Controll_Circle1,
+                                  onEnd: (data) async {},
                                 ),
                               ],
                             ),
@@ -819,6 +967,51 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 10,
                           )
                         ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SliderTheme(
+                        data: SliderThemeData(
+                          trackHeight: 20,
+                          thumbColor: Colors.blue.shade900,
+                          trackShape: const GradientRectSliderTrackShape(
+                              gradient: LinearGradient(
+                                  colors: <Color>[Colors.red, Colors.purple]),
+                              darkenInactive: false),
+                          thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 17.0),
+                          overlayShape: const RoundSliderOverlayShape(
+                              overlayRadius: 30.0),
+                        ),
+                        child: Slider(
+                          value: rating,
+                          onChanged: (val) async {
+                            //_value = val;
+                            //print(lastval);
+                            rating = val;
+                            //print(val);
+                            int data = val ~/ 4 * 4;
+                            print(data);
+                            if (isConnect()) {
+                              try {
+                                // if ((lastval - val).abs() > 3) {
+                                //   lastval = rating;
+
+                                _connection!.output.add(
+                                    convertStringToUint8List(
+                                        's1:' + data.toString() + 'n'));
+                                //top_servo2_last = top_servo2;
+                                await _connection!.output.allSent;
+                              } catch (error) {
+                                //print(error);
+                              }
+                            }
+                            setState(() {});
+                          },
+                          max: 90,
+                          min: 30,
+                        ),
                       ),
                     ],
                   ),

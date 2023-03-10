@@ -1,3 +1,5 @@
 # ninja log v5
 1	3561	694527203	CMakeFiles/native_opencv.dir/src/main/cpp/native_add.cpp.o	a3f14b20c8b2454b
 3564	7079	694527206	E:/hoc tap/20213/untitled1/build/app/intermediates/cxx/Debug/y6y3m1o5/obj/x86/libnative_opencv.so	af43007ba387758f
+26	2169	697024164	CMakeFiles/native_opencv.dir/src/main/cpp/native_add.cpp.o	a3f14b20c8b2454b
+2169	6282	697024168	E:/hoc tap/20213/untitled1/build/app/intermediates/cxx/Debug/y6y3m1o5/obj/x86/libnative_opencv.so	af43007ba387758f
