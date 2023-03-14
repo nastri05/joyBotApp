@@ -103,10 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     // print(top_servo1);
     // print(lefl_servo1);
-    print('gia tri' +
-        ((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180)
-            .toInt()
-            .toString());
+    print(
+        'gia tri${((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180).toInt()}');
     if (isConnect()) {
       //print(top_servo1 ~/ 10 * 10);
       // print(top_servo1_last);
@@ -214,20 +212,21 @@ class _HomeScreenState extends State<HomeScreen> {
     List<DropdownMenuItem<BluetoothDevice>> items = [];
     if (devicesList.isEmpty) {
       //print('rong roi anh oi');
-      items.add(DropdownMenuItem(
+      items.add(const DropdownMenuItem(
         child: Text(
           'NONE',
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ));
     } else {
-      devicesList.forEach((device) {
+      for (var device in devicesList) {
         items.add(DropdownMenuItem(
-          child: Text(device.name.toString(),
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           value: device,
+          child: Text(device.name.toString(),
+              style:
+                  const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
         ));
-      });
+      }
     }
     return items;
   }
@@ -306,8 +305,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     _speechToText.listen(
       onResult: _onSpeechResult,
-      listenFor: Duration(seconds: 8),
-      pauseFor: Duration(seconds: 5),
+      listenFor: const Duration(seconds: 8),
+      pauseFor: const Duration(seconds: 5),
     );
     var future123 = LoadingApp.Loading_Mic(context, future_close);
     future123.whenComplete(() async {
@@ -319,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
         print('Chạy đc');
         try {
           _connection!.output
-              .add(convertStringToUint8List(exactlyData.codeBL + 'n'));
+              .add(convertStringToUint8List('${exactlyData.codeBL}n'));
           await _connection!.output.allSent;
         } catch (error) {
           //print(error);
@@ -430,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: 70,
                                       height: 50,
                                       alignment: Alignment.center,
-                                      child: Icon(
+                                      child: const Icon(
                                         CupertinoIcons.book,
                                       ),
                                     ),
@@ -520,26 +519,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child: Column(
                                                 children: <Widget>[
                                                   Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10),
                                                     child: Align(
+                                                      alignment:
+                                                          Alignment.topLeft,
                                                       child: IconButton(
                                                         onPressed: () {
                                                           Navigator.of(context)
                                                               .pop();
                                                         },
-                                                        icon: Icon(
+                                                        icon: const Icon(
                                                           Icons.arrow_back_ios,
                                                           size: 20,
                                                           color: Colors.black,
                                                         ),
                                                       ),
-                                                      alignment:
-                                                          Alignment.topLeft,
                                                     ),
                                                   ),
                                                   SwitchListTile(
-                                                    title: Text(
+                                                    title: const Text(
                                                       'Enable Bluetooth',
                                                       style: TextStyle(
                                                           fontSize: 25),
@@ -548,11 +548,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         .isEnabled,
                                                     secondary: _bluetoothState
                                                             .isEnabled
-                                                        ? Icon(
+                                                        ? const Icon(
                                                             Icons.bluetooth,
                                                             size: 30,
                                                           )
-                                                        : Icon(Icons
+                                                        : const Icon(Icons
                                                             .bluetooth_disabled),
                                                     onChanged: (bool value) {
                                                       // Do the request and update with the true value then
@@ -587,18 +587,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     },
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.all(15),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            15),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
                                                               .start,
                                                       children: <Widget>[
-                                                        Text(
+                                                        const Text(
                                                           'Device',
                                                           style: TextStyle(
                                                               fontSize: 20),
                                                         ),
-                                                        SizedBox(
+                                                        const SizedBox(
                                                           width: 40,
                                                         ),
                                                         DropdownButton(
@@ -641,7 +643,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   borderRadius:
                                                                       BorderRadius.circular(
                                                                           18.0),
-                                                                  side: BorderSide(
+                                                                  side: const BorderSide(
                                                                       color: Colors
                                                                           .red)))),
                                                       onPressed: _connect
@@ -694,7 +696,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: 70,
                                       height: 50,
                                       alignment: Alignment.center,
-                                      child: Icon(
+                                      child: const Icon(
                                         CupertinoIcons.bluetooth,
                                       ),
                                     ),
@@ -729,10 +731,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: 50,
                                       alignment: Alignment.center,
                                       child: (_speechToText.isNotListening)
-                                          ? Icon(
+                                          ? const Icon(
                                               CupertinoIcons.mic,
                                             )
-                                          : Icon(CupertinoIcons.mic_off),
+                                          : const Icon(CupertinoIcons.mic_off),
                                     ),
                                   ),
                                 ),
@@ -740,10 +742,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Row(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 15,
                             ),
                             Container(
@@ -753,22 +755,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     controll_x = (details.x * 100).ceil();
                                     controll_y = (details.y * 100).ceil();
                                   });
-                                  print((controll_x * 2.55).toInt().toString() +
-                                      '/' +
-                                      (-1 * controll_y * 2.55)
-                                          .toInt()
-                                          .toString());
+                                  print(
+                                      '${(controll_x * 2.55).toInt()}/${(-1 * controll_y * 2.55).toInt()}');
                                   if (isConnect()) {
                                     try {
                                       _connection!.output.add(
-                                          convertStringToUint8List('m:' +
-                                              (controll_x * 2.55)
-                                                  .toInt()
-                                                  .toString() +
-                                              '/' +
-                                              ((controll_y * -2.55).toInt())
-                                                  .toString() +
-                                              'n'));
+                                          convertStringToUint8List(
+                                              'm:${(controll_x * 2.55).toInt()}/${(controll_y * -2.55).toInt()}n'));
                                       await _connection!.output.allSent;
                                     } catch (error) {
                                       //print(error);
@@ -778,12 +771,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onStickDragEnd: () async {
                                   if (isConnect()) {
                                     try {
-                                      _connection!.output
-                                          .add(convertStringToUint8List('m:'
-                                                  '0' +
-                                              '/' +
-                                              '0' +
-                                              'n'));
+                                      _connection!.output.add(
+                                          convertStringToUint8List('m:0/0n'));
                                       await _connection!.output.allSent;
                                     } catch (error) {
                                       //print(error);
@@ -794,13 +783,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         )
                       ],
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -812,11 +801,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (isConnect()) {
                                 try {
                                   _connection!.output
-                                      .add(convertStringToUint8List('m:'
-                                              '0' +
-                                          '/' +
-                                          '0' +
-                                          'n'));
+                                      .add(convertStringToUint8List('m:0/0n'));
                                   await _connection!.output.allSent;
                                 } catch (error) {
                                   //print(error);
@@ -838,19 +823,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle, // circular shape
                                 gradient: LinearGradient(
                                   colors: [Colors.pink, Colors.purple],
                                 ),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.swipe_left,
                                 color: Colors.white,
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 30,
                           ),
                           GestureDetector(
@@ -859,11 +844,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (isConnect()) {
                                 try {
                                   _connection!.output
-                                      .add(convertStringToUint8List('m:'
-                                              '0' +
-                                          '/' +
-                                          '0' +
-                                          'n'));
+                                      .add(convertStringToUint8List('m:0/0n'));
                                   await _connection!.output.allSent;
                                 } catch (error) {
                                   //print(error);
@@ -885,13 +866,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               height: 60,
                               width: 60,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle, // circular shape
                                 gradient: LinearGradient(
                                   colors: [Colors.pink, Colors.purple],
                                 ),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.swipe_right,
                                 color: Colors.white,
                               ),
@@ -899,16 +880,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                     ],
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Row(
@@ -950,12 +931,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           )
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       SliderTheme(
@@ -1001,7 +982,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   )
                 ],

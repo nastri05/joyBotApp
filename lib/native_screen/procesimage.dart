@@ -43,7 +43,6 @@ class _ProcessImageState extends State<ProcessImage> {
   Timer? mytimer;
   IOWebSocketChannel? channel;
   StreamController<int> counterController = StreamController<int>.broadcast();
-  var receivePort;
   final faceDetector = FaceDetector(
       options: FaceDetectorOptions(
     // enableClassification: f,
@@ -111,23 +110,19 @@ class _ProcessImageState extends State<ProcessImage> {
     stream.listen((data) async {
       var controll_x = (data.x * 100).ceil();
       var controll_y = (data.y * 100).ceil();
-      print((controll_x * 2.55).toInt().toString() +
-          '/' +
-          (-1 * controll_y * 2.55).toInt().toString());
+      print(
+          '${(controll_x * 2.55).toInt()}/${(-1 * controll_y * 2.55).toInt()}');
       if (isConnect()) {
         try {
-          widget.connection!.output.add(convertStringToUint8List('m:' +
-              (controll_x * 2.55).toInt().toString() +
-              '/' +
-              ((controll_y * -2.55).toInt()).toString() +
-              'n'));
+          widget.connection!.output.add(convertStringToUint8List(
+              'm:${(controll_x * 2.55).toInt()}/${(controll_y * -2.55).toInt()}n'));
           await widget.connection!.output.allSent;
         } catch (error) {
           //print(error);
         }
       }
     });
-    mytimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+    mytimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       //code to run on every 5 seconds
       if (imageData != null) {
         buildwidget(imageData);
@@ -149,8 +144,6 @@ class _ProcessImageState extends State<ProcessImage> {
 
   @override
   Widget build(BuildContext context) {
-    int controll_x = 0;
-    int controll_y = 0;
     var size = MediaQuery.of(context).size;
     channel = IOWebSocketChannel.connect(
         Uri.parse('ws://${widget.Url_socketweb}:81'));
@@ -170,7 +163,7 @@ class _ProcessImageState extends State<ProcessImage> {
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
                               //imageData = (assetName)
-                              return Center(
+                              return const Center(
                                 child: CircularProgressIndicator(
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                       Colors.deepOrange),
@@ -189,7 +182,7 @@ class _ProcessImageState extends State<ProcessImage> {
                             }
                           })),
                   Center(
-                    child: Container(
+                    child: SizedBox(
                       height: size.height,
                       width: size.width,
                       child: StreamBuilder(
@@ -197,14 +190,16 @@ class _ProcessImageState extends State<ProcessImage> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             Rectan_face data = snapshot.data;
-                            print(
-                                ' ${data.Check_face}  + ${data.top} +  ${data.left}');
+                            // if (kDebugMode) {
+                            //   print(
+                            //     ' ${data.Check_face}  + ${data.top} +  ${data.left}');
+                            // }
                             if (data.Check_face == true) {
                               counterController.add(0);
                               return CustomPaint(
                                 foregroundPainter: FaceDetectorPainter(
                                     data,
-                                    Size(672, 360),
+                                    const Size(672, 360),
                                     InputImageRotation.rotation0deg),
                               );
                             } else {
@@ -224,12 +219,12 @@ class _ProcessImageState extends State<ProcessImage> {
             ),
             Column(
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Container(
                   height: 40,
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -253,7 +248,7 @@ class _ProcessImageState extends State<ProcessImage> {
                         height: 40,
                         width: 70,
                         alignment: Alignment.center,
-                        child: Icon(
+                        child: const Icon(
                           CupertinoIcons.back,
                           size: 20,
                         ),
@@ -267,7 +262,7 @@ class _ProcessImageState extends State<ProcessImage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10),
+                  padding: const EdgeInsets.only(left: 10, bottom: 10),
                   child: JoysTickCustom(
                     listener: (details) {
                       Data_Joytich data =
@@ -296,19 +291,19 @@ class _ProcessImageState extends State<ProcessImage> {
                       child: Container(
                         height: 60,
                         width: 60,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle, // circular shape
                           gradient: LinearGradient(
                             colors: [Colors.pink, Colors.purple],
                           ),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.arrow_upward_rounded,
                           color: Colors.white,
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 60,
                     ),
                     GestureDetector(
@@ -319,19 +314,19 @@ class _ProcessImageState extends State<ProcessImage> {
                       child: Container(
                         height: 60,
                         width: 60,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle, // circular shape
                           gradient: LinearGradient(
                             colors: [Colors.pink, Colors.purple],
                           ),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.arrow_downward,
                           color: Colors.white,
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 50,
                     ),
                     GestureDetector(
@@ -345,19 +340,19 @@ class _ProcessImageState extends State<ProcessImage> {
                       child: Container(
                         height: 60,
                         width: 60,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle, // circular shape
                           gradient: LinearGradient(
                             colors: [Colors.pink, Colors.purple],
                           ),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.auto_mode,
                           color: Colors.white,
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     )
                   ],
@@ -395,8 +390,10 @@ class _ProcessImageState extends State<ProcessImage> {
 
   Future<void> processImage(InputImage inputImage) async {
     final faces = await faceDetector.processImage(inputImage);
-    if (faces.length == 0) {
+    if (faces.isEmpty) {
       //print('Hong co ai');
+      CountNotface++;
+      print(" + ${CountNotface}");
       Rectan_face data =
           Rectan_face(Check_face: false, top: 0, left: 0, bot: 0, right: 0);
       bloc.SendFace(data);
@@ -409,6 +406,21 @@ class _ProcessImageState extends State<ProcessImage> {
       //   //       inputImage.inputImageData!.size,
       //   //       inputImage.inputImageData!.imageRotation);
       //   //   // _customPaint = CustomPaint(painter: painter);
+      if (!Checkface || (Checkface && CountNotface > 30)) {
+        print('Gửi A2');
+        if (isConnect()) {
+          //print(top_servo1 ~/ 10 * 10);
+          // print(top_servo1_last);
+          try {
+            widget.connection!.output.add(convertStringToUint8List('Z:a2n'));
+            //top_servo1_last = top_servo1 ~/ 10 * 10;
+            await widget.connection!.output.allSent;
+            Checkface = true;
+          } catch (error) {
+            //print(error);
+          }
+        }
+      }
       String text = 'Faces found 1 : ${faces.length}\n\n';
       for (final face in faces) {
         text +=
@@ -421,7 +433,7 @@ class _ProcessImageState extends State<ProcessImage> {
           right: face.boundingBox.right,
         );
         bloc.SendFace(data);
-        print(text);
+        //print(text);
         return;
       }
     }
