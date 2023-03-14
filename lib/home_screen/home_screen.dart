@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'đi lên': ActionSpeech('a0', 'Đi lên'),
     'đi lùi': ActionSpeech('a9', 'Đi lùi'),
   };
-  String data_url = "192.168.1.165";
+  String data_url = "10.97.16.122";
   SpeechToText _speechToText = SpeechToText();
   bool _isListening = true;
   String _value = '';
@@ -107,26 +107,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180)
             .toInt()
             .toString());
-    if (isConnect() &&
-        (top_servo1 < top_servo1_last - 5 ||
-            top_servo1 > top_servo1_last + 5)) {
+    if (isConnect()) {
+      //print(top_servo1 ~/ 10 * 10);
+      // print(top_servo1_last);
       try {
-        _connection!.output.add(convertStringToUint8List('s3:' +
-            ((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180)
-                .toInt()
-                .toString() +
-            'n'));
-        top_servo1_last = top_servo1;
+        _connection!.output.add(convertStringToUint8List(
+            's3:${((atan(top_servo1 / lefl_servo1) * 160 - 251) * 130 / 251 + 180).toInt()}n'));
+        //top_servo1_last = top_servo1 ~/ 10 * 10;
         await _connection!.output.allSent;
       } catch (error) {
         //print(error);
       }
     }
-    //_top = min(_top, 180);
-    // print(lefl_servo1);
-    // // print(top);
-    // print('-------');
-    //print(((160 - top_servo1) / 160 * 180).toInt());
     setState(() {});
   }
 
@@ -150,27 +142,16 @@ class _HomeScreenState extends State<HomeScreen> {
         (atan((160 - top_servo2) / (160 - lefl_servo2)) * 110 * 135 / 173 + 50)
             .toInt()
             .toString());
-    if (isConnect() &&
-        (top_servo2 < top_servo2_last - 5 ||
-            top_servo2 > top_servo2_last + 5)) {
+    if (isConnect() && (top_servo2 ~/ 10 * 10 != top_servo2_last)) {
       try {
-        _connection!.output.add(convertStringToUint8List('s2:' +
-            (atan((160 - top_servo2) / (160 - lefl_servo2)) * 110 * 135 / 173 +
-                    50)
-                .toInt()
-                .toString() +
-            'n'));
-        top_servo2_last = top_servo2;
+        _connection!.output.add(convertStringToUint8List(
+            's2:${(atan((160 - top_servo2) / (160 - lefl_servo2)) * 110 * 135 / 173 + 50).toInt()}n'));
+        top_servo2_last = top_servo2 ~/ 10 * 10;
         await _connection!.output.allSent;
       } catch (error) {
         //print(error);
       }
     }
-    // print(lefl_servo2);
-    // print(top_servo2);
-    // print('-------');
-    //print(((160 - top_servo2) / 160 * 180).toInt());
-    // print('=======');
     setState(() {});
   }
 
@@ -381,11 +362,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    //print('Hello ' + size.height.toString() + ' ' + size.width.toString());
     int controll_x = 0;
     int controll_y = 0;
-    //int controll_servo = 73;
 
     return Scaffold(
       body: SafeArea(
@@ -420,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ScreenBlock(
-                                            connection: _connection!,
+                                            connection: _connection,
                                           ),
                                         ),
                                       );
@@ -429,6 +407,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         context,
                                         'Chưa kết nối Bluetooth',
                                         'Hãy kết nối',
+                                      );
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ScreenBlock(
+                                            connection: null,
+                                          ),
+                                        ),
                                       );
                                     }
                                   },
@@ -476,6 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                         builder: (context) => ProcessImage(
                                           Url_socketweb: data_url,
+                                          connection: _connection,
                                         ),
                                       ),
                                     );
@@ -987,27 +974,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Slider(
                           value: rating,
                           onChanged: (val) async {
-                            //_value = val;
-                            //print(lastval);
                             rating = val;
-                            //print(val);
-                            int data = val ~/ 4 * 4;
-                            print(data);
+                            print(rating);
+                            setState(() {});
+                          },
+                          onChangeEnd: (data) async {
                             if (isConnect()) {
                               try {
                                 // if ((lastval - val).abs() > 3) {
                                 //   lastval = rating;
+                                data = data ~/ 4 * 4;
 
                                 _connection!.output.add(
                                     convertStringToUint8List(
-                                        's1:' + data.toString() + 'n'));
+                                        's1:${data.toInt()}n'));
                                 //top_servo2_last = top_servo2;
                                 await _connection!.output.allSent;
                               } catch (error) {
                                 //print(error);
                               }
                             }
-                            setState(() {});
                           },
                           max: 90,
                           min: 30,

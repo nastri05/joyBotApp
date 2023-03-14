@@ -16,8 +16,10 @@ class VitriBlock {
         mode == 'Servo 3') {
       ModeBlock = BoxControllcmd(mode: mode);
       size_Box = ModeBlock!.getSize();
+    } else if (mode == 'START') {
+      size_Box = Size(90, 90);
     } else {
-      size_Box = Size(80, 80);
+      size_Box = Size(120, 90);
     }
   }
   BoxControllcmd? ModeBlock;

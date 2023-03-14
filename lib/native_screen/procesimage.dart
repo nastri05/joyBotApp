@@ -9,7 +9,7 @@ import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:untitled1/home_screen/joystick/joys_tick_custom.dart';
-import 'package:untitled1/home_screen/slider_circle/gradient_rect_slider_track_shape.dart';
+import 'package:untitled1/native_screen/data_joytich.dart';
 import 'package:web_socket_channel/io.dart';
 import 'dart:async';
 import 'painter/face_detector_painter.dart';
@@ -26,8 +26,15 @@ class ProcessImage extends StatefulWidget {
 
 class _ProcessImageState extends State<ProcessImage> {
   MyBloc bloc = MyBloc();
+  StreamController<Data_Joytich> controller =
+      StreamController<Data_Joytich>.broadcast();
+  StreamController<double> controller_slider =
+      StreamController<double>.broadcast();
   //String Url = '10.97.6.136';
   double rating = 50;
+  int CountNotface = 0;
+  bool Checkface = false;
+  int check = 0;
   Uint8List? bytes;
   bool loadanh = false;
   File? file;
@@ -35,6 +42,7 @@ class _ProcessImageState extends State<ProcessImage> {
   Uint8List? imageData;
   Timer? mytimer;
   IOWebSocketChannel? channel;
+  StreamController<int> counterController = StreamController<int>.broadcast();
   var receivePort;
   final faceDetector = FaceDetector(
       options: FaceDetectorOptions(
@@ -54,13 +62,77 @@ class _ProcessImageState extends State<ProcessImage> {
 
   @override
   void initState() {
+    Stream stream = controller.stream;
+    Stream slider_servo = controller_slider.stream;
+    Stream detectfae = counterController.stream;
+    detectfae.listen((event) {});
+    slider_servo.listen((data) async {
+      if (rating + data > 50) {
+        if (isConnect()) {
+          //print(top_servo1 ~/ 10 * 10);
+          // print(top_servo1_last);
+          try {
+            widget.connection!.output.add(convertStringToUint8List('s4:50n'));
+            //top_servo1_last = top_servo1 ~/ 10 * 10;
+            await widget.connection!.output.allSent;
+          } catch (error) {
+            //print(error);
+          }
+        }
+      } else if (rating + data < 0) {
+        if (isConnect()) {
+          //print(top_servo1 ~/ 10 * 10);
+          // print(top_servo1_last);
+          try {
+            widget.connection!.output.add(convertStringToUint8List('s4:0n'));
+            //top_servo1_last = top_servo1 ~/ 10 * 10;
+            await widget.connection!.output.allSent;
+          } catch (error) {
+            //print(error);
+          }
+        }
+      } else {
+        rating = rating + data;
+        // setState(() {});
+        if (isConnect()) {
+          //print(top_servo1 ~/ 10 * 10);
+          // print(top_servo1_last);
+          try {
+            widget.connection!.output
+                .add(convertStringToUint8List('s4:${rating.toInt()}n'));
+            //top_servo1_last = top_servo1 ~/ 10 * 10;
+            await widget.connection!.output.allSent;
+          } catch (error) {
+            //print(error);
+          }
+        }
+      }
+    });
+    stream.listen((data) async {
+      var controll_x = (data.x * 100).ceil();
+      var controll_y = (data.y * 100).ceil();
+      print((controll_x * 2.55).toInt().toString() +
+          '/' +
+          (-1 * controll_y * 2.55).toInt().toString());
+      if (isConnect()) {
+        try {
+          widget.connection!.output.add(convertStringToUint8List('m:' +
+              (controll_x * 2.55).toInt().toString() +
+              '/' +
+              ((controll_y * -2.55).toInt()).toString() +
+              'n'));
+          await widget.connection!.output.allSent;
+        } catch (error) {
+          //print(error);
+        }
+      }
+    });
     mytimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
       //code to run on every 5 seconds
       if (imageData != null) {
         buildwidget(imageData);
       }
     });
-
     super.initState();
   }
 
@@ -71,6 +143,7 @@ class _ProcessImageState extends State<ProcessImage> {
     mytimer!.cancel();
     channel!.sink.close();
     bloc.dispose();
+    controller.close();
     super.dispose();
   }
 
@@ -84,255 +157,217 @@ class _ProcessImageState extends State<ProcessImage> {
     //InputImageData? data_image;
     return SafeArea(
       child: Scaffold(
-        body: Center(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                  width: size.width,
-                  height: size.height,
-                  child: StreamBuilder(
-                      stream: channel?.stream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          //imageData = (assetName)
-                          return Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.deepOrange),
-                            ),
-                          );
-                        } else {
-                          imageData = snapshot.data;
-                          //setState(() {});
-                          return Image.memory(
-                            imageData!,
-                            width: 672,
-                            height: 360,
-                            gaplessPlayback: true,
-                            fit: BoxFit.contain,
-                          );
-                        }
-                      })),
-              Center(
-                child: Container(
-                  height: size.height,
-                  width: size.width,
-                  child: StreamBuilder(
-                    stream: bloc.counterStream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        Rectan_face data = snapshot.data;
-                        print(
-                            ' ${data.Check_face}  + ${data.top} +  ${data.left}');
-                        if (data.Check_face == true) {
-                          return CustomPaint(
-                            foregroundPainter: FaceDetectorPainter(
-                                data,
-                                Size(672, 360),
-                                InputImageRotation.rotation0deg),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      } else {
-                        // print('not data');
-                        return Container();
-                      }
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                      width: size.width,
+                      height: size.height,
+                      child: StreamBuilder(
+                          stream: channel?.stream,
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              //imageData = (assetName)
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.deepOrange),
+                                ),
+                              );
+                            } else {
+                              imageData = snapshot.data;
+                              //setState(() {});
+                              return Image.memory(
+                                imageData!,
+                                width: 672,
+                                height: 360,
+                                gaplessPlayback: true,
+                                fit: BoxFit.contain,
+                              );
+                            }
+                          })),
+                  Center(
+                    child: Container(
+                      height: size.height,
+                      width: size.width,
+                      child: StreamBuilder(
+                        stream: bloc.counterStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            Rectan_face data = snapshot.data;
+                            print(
+                                ' ${data.Check_face}  + ${data.top} +  ${data.left}');
+                            if (data.Check_face == true) {
+                              counterController.add(0);
+                              return CustomPaint(
+                                foregroundPainter: FaceDetectorPainter(
+                                    data,
+                                    Size(672, 360),
+                                    InputImageRotation.rotation0deg),
+                              );
+                            } else {
+                              counterController.add(1);
+                              return Container();
+                            }
+                          } else {
+                            // print('not data');
+                            return Container();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.only(left: 10),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      faceDetector.close();
+                      mytimer!.cancel();
+                      channel!.sink.close();
+                      bloc.dispose();
+                      Navigator.pop(context);
+                    },
+                    child: Ink(
+                      decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: [Colors.pink, Colors.purple]),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Container(
+                        height: 40,
+                        width: 70,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          CupertinoIcons.back,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(left: 10, bottom: 10),
+                  child: JoysTickCustom(
+                    listener: (details) {
+                      Data_Joytich data =
+                          Data_Joytich(x: details.x, y: details.y);
+                      controller.add(data);
+                    },
+                    onStickDragEnd: () {
+                      Data_Joytich data = Data_Joytich(x: 0, y: 0);
+                      controller.add(data);
                     },
                   ),
                 ),
-              ),
-              Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: 40,
-                    padding: EdgeInsets.only(left: 10),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      onPressed: () {
-                        faceDetector.close();
-                        mytimer!.cancel();
-                        channel!.sink.close();
-                        bloc.dispose();
-                        Navigator.pop(context);
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () async {
+                        print("nhả");
+                        controller_slider.add(-5);
                       },
-                      child: Ink(
+                      child: Container(
+                        height: 60,
+                        width: 60,
                         decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                                colors: [Colors.pink, Colors.purple]),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Container(
-                          height: 40,
-                          width: 70,
-                          alignment: Alignment.center,
-                          child: Icon(
-                            CupertinoIcons.back,
-                            size: 20,
+                          shape: BoxShape.circle, // circular shape
+                          gradient: LinearGradient(
+                            colors: [Colors.pink, Colors.purple],
                           ),
+                        ),
+                        child: Icon(
+                          Icons.arrow_upward_rounded,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 30,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  )
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: 10, bottom: 10),
-                    child: JoysTickCustom(
-                      listener: (details) async {
-                        setState(() {
-                          controll_x = (details.x * 100).ceil();
-                          controll_y = (details.y * 100).ceil();
-                        });
-                        print((controll_x * 2.55).toInt().toString() +
-                            '/' +
-                            (-1 * controll_y * 2.55).toInt().toString());
-                        if (isConnect()) {
-                          try {
-                            widget.connection!.output.add(
-                                convertStringToUint8List('m:' +
-                                    (controll_x * 2.55).toInt().toString() +
-                                    '/' +
-                                    ((controll_y * -2.55).toInt()).toString() +
-                                    'n'));
-                            await widget.connection!.output.allSent;
-                          } catch (error) {
-                            //print(error);
-                          }
-                        }
-                      },
-                      onStickDragEnd: () async {
-                        if (isConnect()) {
-                          try {
-                            widget.connection!.output
-                                .add(convertStringToUint8List('m:'
-                                        '0' +
-                                    '/' +
-                                    '0' +
-                                    'n'));
-                            await widget.connection!.output.allSent;
-                          } catch (error) {
-                            //print(error);
-                          }
-                        }
-                      },
+                    SizedBox(
+                      height: 60,
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      RotatedBox(
-                        quarterTurns: 1,
-                        child: SliderTheme(
-                          data: SliderThemeData(
-                            trackHeight: 20,
-                            thumbColor: Colors.blue.shade900,
-                            trackShape: const GradientRectSliderTrackShape(
-                                gradient: LinearGradient(
-                                    colors: <Color>[Colors.red, Colors.purple]),
-                                darkenInactive: false),
-                            thumbShape: const RoundSliderThumbShape(
-                                enabledThumbRadius: 17.0),
-                            overlayShape: const RoundSliderOverlayShape(
-                                overlayRadius: 30.0),
-                          ),
-                          child: Slider(
-                            value: rating,
-                            onChanged: (val) async {
-                              //_value = val;
-                              rating = val;
-                              print(val);
-                              var data = (val / 4).toInt() * 4;
-                              print(data);
-
-                              if (isConnect()) {
-                                try {
-                                  widget.connection!.output.add(
-                                      convertStringToUint8List('s4:' +
-                                          data.toInt().toString() +
-                                          'n'));
-                                  //top_servo2_last = top_servo2;
-                                  await widget.connection!.output.allSent;
-                                } catch (error) {
-                                  //print(error);
-                                }
-                              }
-                              setState(() {});
-                            },
-                            max: 90,
-                            min: 30,
+                    GestureDetector(
+                      onTap: () async {
+                        print("Nhấn");
+                        controller_slider.add(5);
+                      },
+                      child: Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle, // circular shape
+                          gradient: LinearGradient(
+                            colors: [Colors.pink, Colors.purple],
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          //print("nhả");
-                          channel!.sink.close();
-                          channel = IOWebSocketChannel.connect(
-                              Uri.parse('ws://${widget.Url_socketweb}:81'));
-                          setState(() {});
-                        },
-                        child: Container(
-                          height: 60,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle, // circular shape
-                            gradient: LinearGradient(
-                              colors: [Colors.pink, Colors.purple],
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.auto_mode,
-                            color: Colors.white,
-                          ),
+                        child: Icon(
+                          Icons.arrow_downward,
+                          color: Colors.white,
                         ),
                       ),
-                      SizedBox(
-                        height: 30,
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    width: 30,
-                  )
-                ],
-              )
-            ],
-          ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        //print("nhả");
+                        channel!.sink.close();
+                        channel = IOWebSocketChannel.connect(
+                            Uri.parse('ws://${widget.Url_socketweb}:81'));
+                        setState(() {});
+                      },
+                      child: Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle, // circular shape
+                          gradient: LinearGradient(
+                            colors: [Colors.pink, Colors.purple],
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.auto_mode,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    )
+                  ],
+                ),
+                SizedBox(
+                  width: 30,
+                )
+              ],
+            ),
+          ],
         ),
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () {

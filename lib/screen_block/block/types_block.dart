@@ -7,7 +7,7 @@ class BoxControllcmd {
   String cmd_delay = '0';
   String cmd_Angle = '0';
   Size getSize() {
-    return Size(120, 80);
+    return Size(120, 90);
   }
 
   set setCmdSpeed(String cmd_speed) {

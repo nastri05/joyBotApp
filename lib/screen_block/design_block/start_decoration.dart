@@ -17,8 +17,8 @@ class StartDecoration extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          height: 80,
-          width: 80,
+          height: 90,
+          width: 90,
           decoration: BoxDecoration(
               color: ModeBlock[widget.mode],
               border: Border.all(
@@ -37,16 +37,16 @@ class StartDecoration extends StatelessWidget {
               borderRadius: BorderRadius.circular(10)),
         ),
         Container(
-          width: 80,
-          height: 80,
+          width: 90,
+          height: 90,
           child: CustomPaint(
             foregroundPainter: CirclePaint(),
             //CirclePain(),
           ),
         ),
         Container(
-          width: 80,
-          height: 80,
+          width: 90,
+          height: 90,
           child: Center(
             child: Text(
               'Bắt đầu',

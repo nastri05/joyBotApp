@@ -31,8 +31,9 @@ class block extends StatefulWidget {
     required this.myController_delay,
     required this.onsubmitt_angle,
     required this.myController_angle,
+    required this.scale,
   }) : super(key: key);
-
+  final double scale;
   final double top;
   final double left;
   final Function(DragUpdateDetails details) onPanUpdate;
@@ -77,12 +78,15 @@ class _blockState extends State<block> {
         top: widget.top,
         left: widget.left,
         child: GestureDetector(
-            behavior: HitTestBehavior.deferToChild,
-            onPanUpdate: (widget.mode == 'START') ? null : widget.onPanUpdate,
-            onPanEnd: (widget.mode == 'START') ? null : widget.onPanEnd,
-            onPanStart: (widget.mode == 'START') ? null : widget.onPanStart,
-            onTap: (widget.mode == 'START') ? widget.onTap : null,
-            child: GetBlocks(ModeBlock, widget.mode, widget)),
+          behavior: HitTestBehavior.deferToChild,
+          onPanUpdate: (widget.mode == 'START') ? null : widget.onPanUpdate,
+          onPanEnd: (widget.mode == 'START') ? null : widget.onPanEnd,
+          onPanStart: (widget.mode == 'START') ? null : widget.onPanStart,
+          onTap: (widget.mode == 'START') ? widget.onTap : null,
+          child: Transform.scale(
+              scale: widget.scale,
+              child: GetBlocks(ModeBlock, widget.mode, widget)),
+        ),
       ),
     );
   }

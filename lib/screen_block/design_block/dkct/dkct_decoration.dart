@@ -16,8 +16,8 @@ class DkctDecoration extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          height: 80,
-          width: 80,
+          height: 90,
+          width: 120,
           decoration: BoxDecoration(
               color: ModeBlock[widget.mode],
               border: Border.all(
@@ -36,8 +36,8 @@ class DkctDecoration extends StatelessWidget {
               borderRadius: BorderRadius.circular(10)),
         ),
         Container(
-          width: 80,
-          height: 80,
+          width: 120,
+          height: 90,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
