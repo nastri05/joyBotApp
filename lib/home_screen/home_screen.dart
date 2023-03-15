@@ -317,6 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         print('Chạy đc');
         try {
+          print('${exactlyData.codeBL}n');
           _connection!.output
               .add(convertStringToUint8List('${exactlyData.codeBL}n'));
           await _connection!.output.allSent;

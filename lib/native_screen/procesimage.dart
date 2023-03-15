@@ -33,6 +33,7 @@ class _ProcessImageState extends State<ProcessImage> {
   //String Url = '10.97.6.136';
   double rating = 50;
   int CountNotface = 0;
+  int CountFace = 0;
   bool Checkface = false;
   int check = 0;
   Uint8List? bytes;
@@ -64,14 +65,42 @@ class _ProcessImageState extends State<ProcessImage> {
     Stream stream = controller.stream;
     Stream slider_servo = controller_slider.stream;
     Stream detectfae = counterController.stream;
-    detectfae.listen((event) {});
+    detectfae.listen((event) async {
+      print(event);
+      if (event == 1) {
+        CountNotface++;
+        print(" + ${CountNotface}");
+      } else {
+        CountFace++;
+        if ((!Checkface && CountFace > 5) || (Checkface && CountNotface > 20)) {
+          if (isConnect()) {
+            //print(top_servo1 ~/ 10 * 10);
+            // print(top_servo1_last);
+            try {
+              widget.connection!.output.add(convertStringToUint8List('Z/a1/n'));
+              //top_servo1_last = top_servo1 ~/ 10 * 10;
+              await widget.connection!.output.allSent;
+              Checkface = false;
+              CountFace = 0;
+              print('Gửi A2');
+              CountNotface = 0;
+            } catch (error) {
+              print(error);
+            }
+          }
+        }
+      }
+      if (CountNotface > 20) {
+        Checkface = true;
+      }
+    });
     slider_servo.listen((data) async {
-      if (rating + data > 50) {
+      if (rating + data > 60) {
         if (isConnect()) {
           //print(top_servo1 ~/ 10 * 10);
           // print(top_servo1_last);
           try {
-            widget.connection!.output.add(convertStringToUint8List('s4:50n'));
+            widget.connection!.output.add(convertStringToUint8List('s4:60n'));
             //top_servo1_last = top_servo1 ~/ 10 * 10;
             await widget.connection!.output.allSent;
           } catch (error) {
@@ -392,8 +421,6 @@ class _ProcessImageState extends State<ProcessImage> {
     final faces = await faceDetector.processImage(inputImage);
     if (faces.isEmpty) {
       //print('Hong co ai');
-      CountNotface++;
-      print(" + ${CountNotface}");
       Rectan_face data =
           Rectan_face(Check_face: false, top: 0, left: 0, bot: 0, right: 0);
       bloc.SendFace(data);
@@ -406,21 +433,7 @@ class _ProcessImageState extends State<ProcessImage> {
       //   //       inputImage.inputImageData!.size,
       //   //       inputImage.inputImageData!.imageRotation);
       //   //   // _customPaint = CustomPaint(painter: painter);
-      if (!Checkface || (Checkface && CountNotface > 30)) {
-        print('Gửi A2');
-        if (isConnect()) {
-          //print(top_servo1 ~/ 10 * 10);
-          // print(top_servo1_last);
-          try {
-            widget.connection!.output.add(convertStringToUint8List('Z:a2n'));
-            //top_servo1_last = top_servo1 ~/ 10 * 10;
-            await widget.connection!.output.allSent;
-            Checkface = true;
-          } catch (error) {
-            //print(error);
-          }
-        }
-      }
+
       String text = 'Faces found 1 : ${faces.length}\n\n';
       for (final face in faces) {
         text +=
